@@ -3,6 +3,8 @@ import models.*;
 import algorithms.*;
 import datastructures.*;
 import utils.InputHelper;
+import utils.PdfReportGenerator;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public class Main {
         TransactionHistory transactionHistory = new TransactionHistory();
         MarketAnalytics marketAnalytics = new MarketAnalytics();
         RiskManager riskManager = new RiskManager();
+        JwcConnectionManager jwcConnectionManager = new JwcConnectionManager();
 
         // Initialize Trader Profile
         Trader trader = new Trader(101, "Jane Doe", 100000.0);
@@ -44,10 +47,11 @@ public class Main {
             System.out.println("  [5] " + BOLD + "MARKET ANALYTICS" + RESET + "  : Technical Indicators, Bull Runs (LIS), Range Queries");
             System.out.println("  [6] " + BOLD + "PORTFOLIO RISK" + RESET + "    : Stress Testing, Value at Risk (VaR), HHI Index");
             System.out.println("  [7] " + BOLD + "QUANT ALGORITHMS" + RESET + "  : Arbitrage Detection, Knapsack Optimization, Correlation");
-            System.out.println("  [8] " + BOLD + "EXIT SYSTEM" + RESET);
+            System.out.println("  [8] " + BOLD + "JWC CONNECTIVITY" + RESET + "  : Manage connection to Java Web Console / WebSocket Broker");
+            System.out.println("  [9] " + BOLD + "EXIT SYSTEM" + RESET);
             System.out.println(CYAN + "------------------------------------------------------------------------" + RESET);
 
-            int choice = InputHelper.readInt("Select Operations Menu (1-8): ", 1, 8);
+            int choice = InputHelper.readInt("Select Operations Menu (1-9): ", 1, 9);
 
             switch (choice) {
                 case 1:
@@ -59,6 +63,18 @@ public class Main {
                     break;
                 case 3:
                     portfolioManager.viewPortfolio(trader, stockManager);
+                    System.out.println();
+                    String exportPdf = InputHelper.readString("Would you like to export this portfolio & stock data to PDF? (Y/N): ");
+                    if (exportPdf.equalsIgnoreCase("Y")) {
+                        try {
+                            String reportPath = "portfolio_report.pdf";
+                            System.out.println("Generating report at " + reportPath + "...");
+                            PdfReportGenerator.generateReport(reportPath, trader, portfolioManager, stockManager);
+                            System.out.println(GREEN + "Report successfully downloaded! Check portfolio_report.pdf in the project folder." + RESET);
+                        } catch (Exception e) {
+                            System.out.println(RED + "Failed to generate report: " + e.getMessage() + RESET);
+                        }
+                    }
                     InputHelper.pressEnterToContinue();
                     break;
                 case 4:
@@ -75,6 +91,9 @@ public class Main {
                     handleQuantAlgorithms(stockManager, trader);
                     break;
                 case 8:
+                    jwcConnectionManager.manageJwcDesk();
+                    break;
+                case 9:
                     System.out.println(BOLD + GREEN + "\nShutting down AlgoTrade Engine... Good bye!" + RESET);
                     System.exit(0);
             }
